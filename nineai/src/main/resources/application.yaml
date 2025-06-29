@@ -1,0 +1,74 @@
+# ────────────── 基础配置 ──────────────
+server:
+  port: 8080                       # 改 80/9090 按需
+  servlet:
+    context-path: /                # 若需 /nine-ai 可改这里
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher   # 🔑 解决 springdoc 1.x + Boot 2.6+ 404
+
+  # ────── 数据源（MySQL）──────
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://124.220.158.76:3306/nine?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+    username: nine
+    password: Hr2FMeEWsGNbiB2A
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      pool-name: NineAIHikariPool
+      idle-timeout: 30000
+      connection-timeout: 30000
+      max-lifetime: 600000
+
+  # ────── Redis（如需）──────
+  # redis:
+  #   host: 127.0.0.1
+  #   port: 6379
+  #   password:
+  #   database: 0
+  #   lettuce:
+  #     pool:
+  #       max-active: 8
+  #       max-idle: 8
+  #       min-idle: 0
+  #       max-wait: 5s
+
+# ────── MyBatis / MyBatis-Plus ──────
+mybatis-plus:                       # 若仅 MyBatis 则写 mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.nineai.nineai.domain
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 控制台打印 SQL，可去掉
+
+# ────── springdoc-openapi / Knife4j ──────
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: method
+    display-request-duration: true
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn               # 中文界面
+    # basePackage＋扫描速度 ↑，多个包逗号分隔
+    # enableSwaggerModels: false  # 如不需要右侧 Model 面板可关闭
+
+# ────── 日志 ──────
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    root: info
+    com.nineai.nineai: debug      # 业务包 DEBUG，其余保持 info
+    org.mybatis: warn
+    druid: warn
